@@ -1,21 +1,41 @@
-name: Build Stamp
+name: Build stamp cross-platform
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-go@v5
         with:
           go-version: '1.21'
-      - run: go mod tidy
-      - run: mkdir -p build && go build -o build/stamp main.go
-      - uses: actions/upload-artifact@v4
+
+      - name: Tidy dependencies
+        run: go mod tidy
+
+      - name: Build stamp
+        run: |
+          mkdir -p dist
+          EXT=$([ "${{ matrix.goos }}" = "windows" ] && echo ".exe" || echo "")
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o dist/stamp-${{ matrix.goos }}-${{ matrix.goarch }}${EXT} main.go
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: stamp
-          path: build/
+          name: stamp-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
