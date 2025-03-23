@@ -1,4 +1,4 @@
-module github.com/markus/stamp
+module github.com/Reli4ble/stamp
 
 go 1.21
 
