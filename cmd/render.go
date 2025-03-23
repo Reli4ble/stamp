@@ -1,0 +1,3 @@
+package cmd
+
+// ... vollständiger render code von v0.6.0 ...
