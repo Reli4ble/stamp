@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"github.com/markus/stamp/cmd"
+	"github.com/Reli4ble/stamp/cmd"
 )
 
 func main() {
