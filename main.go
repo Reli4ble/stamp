@@ -4,31 +4,36 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
 	"github.com/Reli4ble/stamp/cmd"
 )
 
 func main() {
-	selfTest := flag.Bool("self-test", false, "Führt einen Selbsttest durch")
-	render := flag.Bool("render", false, "Rendert Templates")
-	strict := flag.Bool("strict", false, "Bricht bei fehlenden Platzhaltern ab")
-	dryRun := flag.Bool("dry-run", false, "Zeigt Ergebnis nur im Terminal")
-	env := flag.String("env", "", "Pfad zur .env-Datei")
-	yaml := flag.String("yaml", "", "Pfad zur .yaml-Datei")
-	in := flag.String("in", "", "Template-Datei")
-	out := flag.String("out", "", "Ausgabedatei")
-	inDir := flag.String("in-dir", "", "Ordner mit .st-Dateien")
-	outDir := flag.String("out-dir", "", "Zielordner")
+	selfTest := flag.Bool("self-test", false, "Run self-test")
+	render := flag.Bool("render", false, "Render a single template or batch")
+	autoScan := flag.Bool("auto-scan", false, "Recursively render all files in the directory and overwrite in place")
+	strict := flag.Bool("strict", false, "Enable strict mode (error on missing placeholders)")
+	dryRun := flag.Bool("dry-run", false, "Display output in terminal without writing to file")
+	forceSuccess := flag.Bool("force-success", false, "Force exit 0 even if errors occur")
+	env := flag.String("env", "", "Path to .env file")
+	yaml := flag.String("yaml", "", "Path to YAML file")
+	in := flag.String("in", "", "Template file to render")
+	out := flag.String("out", "", "Output file for rendered template")
+	inDir := flag.String("in-dir", "", "Directory containing templates (for batch processing)")
+	outDir := flag.String("out-dir", "", "Output directory for batch processing (ignored in auto-scan mode)")
 	flag.Parse()
 
 	opts := cmd.Options{
-		EnvPath:  *env,
-		YamlPath: *yaml,
-		InFile:   *in,
-		OutFile:  *out,
-		InDir:    *inDir,
-		OutDir:   *outDir,
-		Strict:   *strict,
-		DryRun:   *dryRun,
+		EnvPath:      *env,
+		YamlPath:     *yaml,
+		InFile:       *in,
+		OutFile:      *out,
+		InDir:        *inDir,
+		OutDir:       *outDir,
+		Strict:       *strict,
+		DryRun:       *dryRun,
+		AutoScan:     *autoScan,
+		ForceSuccess: *forceSuccess,
 	}
 
 	switch {
@@ -36,8 +41,10 @@ func main() {
 		cmd.RunSelfTest(opts)
 	case *render:
 		cmd.RunRender(opts)
+	case *autoScan:
+		cmd.RunAutoScan(opts)
 	default:
-		fmt.Println("Bitte --render oder --self-test verwenden.")
+		fmt.Println("Please specify a mode: --render, --self-test, or --auto-scan")
 		os.Exit(1)
 	}
 }
