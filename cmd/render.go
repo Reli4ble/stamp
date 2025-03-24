@@ -15,16 +15,16 @@ func RunRender(opts Options) {
 	yamlVars, _ := parser.LoadYAML(opts.YamlPath)
 	data := parser.MergeMaps(envVars, yamlVars)
 
-	// Einzelne Template-Verarbeitung
+	// Single template processing
 	if opts.InFile != "" {
 		tmplContent, err := os.ReadFile(opts.InFile)
 		if err != nil {
-			fmt.Println("Fehler beim Lesen der Template-Datei:", err)
+			fmt.Println("Error reading template file:", err)
 			os.Exit(1)
 		}
 		rendered, err := tpl.RenderTemplate(string(tmplContent), data, opts.Strict)
 		if err != nil {
-			fmt.Println("Render-Fehler:", err)
+			fmt.Println("Render error:", err)
 			os.Exit(1)
 		}
 		if opts.DryRun {
@@ -35,7 +35,7 @@ func RunRender(opts Options) {
 		} else {
 			err = os.WriteFile(opts.OutFile, []byte(rendered), 0644)
 			if err != nil {
-				fmt.Println("Fehler beim Schreiben in", opts.OutFile, ":", err)
+				fmt.Println("Error writing to", opts.OutFile, ":", err)
 				os.Exit(1)
 			}
 			absIn, _ := filepath.Abs(opts.InFile)
@@ -45,7 +45,7 @@ func RunRender(opts Options) {
 		return
 	}
 
-	// Batch-Verarbeitung
+	// Batch processing (non-auto-scan)
 	if opts.InDir != "" {
 		files, _ := os.ReadDir(opts.InDir)
 		os.MkdirAll(opts.OutDir, 0755)
@@ -58,12 +58,12 @@ func RunRender(opts Options) {
 			outPath := filepath.Join(opts.OutDir, outName)
 			content, err := os.ReadFile(inPath)
 			if err != nil {
-				fmt.Println("Fehler beim Lesen:", inPath)
+				fmt.Println("Error reading:", inPath)
 				continue
 			}
 			rendered, err := tpl.RenderTemplate(string(content), data, opts.Strict)
 			if err != nil {
-				fmt.Println("Fehler in", f.Name()+":", err)
+				fmt.Println("Error in", f.Name()+":", err)
 				continue
 			}
 			if opts.DryRun {
@@ -74,7 +74,7 @@ func RunRender(opts Options) {
 			} else {
 				err = os.WriteFile(outPath, []byte(rendered), 0644)
 				if err != nil {
-					fmt.Println("Fehler beim Schreiben in", outPath, ":", err)
+					fmt.Println("Error writing to", outPath, ":", err)
 					continue
 				}
 				absIn, _ := filepath.Abs(inPath)
