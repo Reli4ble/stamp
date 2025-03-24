@@ -30,13 +30,6 @@ stamp --render --in=config.tpl.st --out=config.conf --strict
 stamp --self-test --in-dir=templates --out-dir=out --env=.env --yaml=config.yaml
 ```
 
-## 🛠️ Build
-
-```bash
-go mod tidy
-go build -o stamp main.go
-```
-
 ## 📄 Lizenz
 
 [Apache 2.0](LICENSE)
@@ -56,15 +49,7 @@ stamp is a lightweight template tool written in Go that processes `.st` files us
 - **Cross-Platform Builds:** Built via GitHub Actions for Linux, and macOS (amd64 & arm64).
 - **Self-Test Mode:** Validate your configuration, check for required files, and ensure write permissions.
 
-## Installation
 
-Clone the repository and build stamp:
-
-```bash
-git clone https://github.com/Reliable/stamp.git
-cd stamp
-go mod tidy
-go build -o stamp main.go
 
 
 ## 📄 Lizenz
