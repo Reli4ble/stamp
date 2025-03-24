@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Reli4ble/stamp/parser"
-	tpl "github.com/Reli4ble/stamp/template"
+	"github.com/markus/stamp/parser"
+	tpl "github.com/markus/stamp/template"
 )
 
 func RunRender(opts Options) {
@@ -15,6 +15,7 @@ func RunRender(opts Options) {
 	yamlVars, _ := parser.LoadYAML(opts.YamlPath)
 	data := parser.MergeMaps(envVars, yamlVars)
 
+	// Einzelne Template-Verarbeitung
 	if opts.InFile != "" {
 		tmplContent, err := os.ReadFile(opts.InFile)
 		if err != nil {
@@ -27,14 +28,24 @@ func RunRender(opts Options) {
 			os.Exit(1)
 		}
 		if opts.DryRun {
+			absIn, _ := filepath.Abs(opts.InFile)
+			absOut, _ := filepath.Abs(opts.OutFile)
+			fmt.Printf("Dry-run: %s would be written to %s\n", absIn, absOut)
 			fmt.Println(rendered)
 		} else {
-			os.WriteFile(opts.OutFile, []byte(rendered), 0644)
+			err = os.WriteFile(opts.OutFile, []byte(rendered), 0644)
+			if err != nil {
+				fmt.Println("Fehler beim Schreiben in", opts.OutFile, ":", err)
+				os.Exit(1)
+			}
+			absIn, _ := filepath.Abs(opts.InFile)
+			absOut, _ := filepath.Abs(opts.OutFile)
+			fmt.Printf("✔ Template processed: %s -> %s\n", absIn, absOut)
 		}
-		fmt.Println("✔ Template erfolgreich verarbeitet.")
 		return
 	}
 
+	// Batch-Verarbeitung
 	if opts.InDir != "" {
 		files, _ := os.ReadDir(opts.InDir)
 		os.MkdirAll(opts.OutDir, 0755)
@@ -56,11 +67,20 @@ func RunRender(opts Options) {
 				continue
 			}
 			if opts.DryRun {
+				absIn, _ := filepath.Abs(inPath)
+				absOut, _ := filepath.Abs(outPath)
+				fmt.Printf("Dry-run: %s would be written to %s\n", absIn, absOut)
 				fmt.Printf("=== %s ===\n%s\n", f.Name(), rendered)
 			} else {
-				os.WriteFile(outPath, []byte(rendered), 0644)
+				err = os.WriteFile(outPath, []byte(rendered), 0644)
+				if err != nil {
+					fmt.Println("Fehler beim Schreiben in", outPath, ":", err)
+					continue
+				}
+				absIn, _ := filepath.Abs(inPath)
+				absOut, _ := filepath.Abs(outPath)
+				fmt.Printf("✔ Processed: %s -> %s\n", absIn, absOut)
 			}
-			fmt.Println("✔", f.Name(), "verarbeitet.")
 		}
 	}
 }
