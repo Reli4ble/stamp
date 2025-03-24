@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/markus/stamp/parser"
-	tpl "github.com/markus/stamp/template"
+	"github.com/Reli4ble/stamp/parser"
+	tpl "github.com/Reli4ble/stamp/template"
 )
 
 func RunSelfTest(opts Options) {
