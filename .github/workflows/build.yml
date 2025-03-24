@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  VERSION: ${{ github.ref_name != '' ? github.ref_name : 'dev' }}
+  VERSION: "${{ github.ref_name != '' ? github.ref_name : 'dev' }}"
 
 jobs:
   build:
