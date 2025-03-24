@@ -13,39 +13,65 @@ import (
 func RunSelfTest(opts Options) {
 	fmt.Println("== Stamp Self-Test ==")
 
-	_, err1 := parser.LoadEnv(opts.EnvPath)
-	printResult("ENV geladen", err1)
-
-	_, err2 := parser.LoadYAML(opts.YamlPath)
-	printResult("YAML geladen", err2)
-
-	templates, ok := listTemplates(opts.InDir)
-	printCheck("Templates gefunden", ok)
-
-	data := make(map[string]interface{})
-	if err1 == nil {
-		env, _ := parser.LoadEnv(opts.EnvPath)
-		yml, _ := parser.LoadYAML(opts.YamlPath)
-		data = parser.MergeMaps(env, yml)
+	// Prüfe .env-Datei
+	if opts.EnvPath == "" {
+		fmt.Println("[!] Keine .env-Datei angegeben")
+	} else {
+		_, err := parser.LoadEnv(opts.EnvPath)
+		printResult("ENV geladen", err)
 	}
 
-	allOk := true
-	for _, file := range templates {
-		content, _ := os.ReadFile(file)
-		_, err := tpl.RenderTemplate(string(content), data, false)
-		if err != nil {
-			fmt.Println("[✗]", file)
-			allOk = false
+	// Prüfe YAML-Datei
+	if opts.YamlPath == "" {
+		fmt.Println("[!] Keine YAML-Datei angegeben")
+	} else {
+		_, err := parser.LoadYAML(opts.YamlPath)
+		printResult("YAML geladen", err)
+	}
+
+	// Prüfe Template-Ordner
+	if opts.InDir == "" {
+		fmt.Println("[!] Kein Template-Ordner angegeben")
+	} else {
+		templates, ok := listTemplates(opts.InDir)
+		printCheck("Templates gefunden", ok)
+		if !ok {
+			fmt.Println("[!] Es wurden keine Templates zum Rendern gefunden.")
+		}
+
+		// Daten zusammenführen, falls ENV oder YAML angegeben wurden
+		var data map[string]interface{}
+		if opts.EnvPath != "" || opts.YamlPath != "" {
+			env, _ := parser.LoadEnv(opts.EnvPath)
+			yml, _ := parser.LoadYAML(opts.YamlPath)
+			data = parser.MergeMaps(env, yml)
+		} else {
+			data = make(map[string]interface{})
+		}
+
+		allOk := true
+		for _, file := range templates {
+			content, _ := os.ReadFile(file)
+			_, err := tpl.RenderTemplate(string(content), data, false)
+			if err != nil {
+				fmt.Println("[✗]", file, ":", err)
+				allOk = false
+			}
+		}
+		if len(templates) > 0 && allOk {
+			fmt.Println("[✓] Alle Templates rendern erfolgreich.")
 		}
 	}
-	if allOk {
-		fmt.Println("[✓] Alle Templates rendern erfolgreich.")
-	}
 
-	testFile := filepath.Join(opts.OutDir, ".stamp_test")
-	err := os.WriteFile(testFile, []byte("test"), 0644)
-	printResult("Ausgabeverzeichnis beschreibbar", err)
-	_ = os.Remove(testFile)
+	// Prüfe Ausgabeordner
+	if opts.OutDir == "" {
+		fmt.Println("[!] Kein Ausgabeordner angegeben")
+	} else {
+		testFile := filepath.Join(opts.OutDir, ".stamp_test")
+		err := os.WriteFile(testFile, []byte("test"), 0644)
+		printResult("Ausgabeverzeichnis beschreibbar", err)
+		_ = os.Remove(testFile)
+	}
 
 	fmt.Println("== Fertig ==")
 }
@@ -66,7 +92,7 @@ func listTemplates(dir string) ([]string, bool) {
 
 func printResult(name string, err error) {
 	if err != nil {
-		fmt.Println("[✗]", name)
+		fmt.Println("[✗]", name, ":", err)
 	} else {
 		fmt.Println("[✓]", name)
 	}
