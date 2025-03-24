@@ -2,6 +2,7 @@ package parser
 
 import (
 	"os"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -10,11 +11,11 @@ func LoadYAML(path string) (map[string]interface{}, error) {
 	if path == "" {
 		return data, nil
 	}
-	bytes, err := os.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return data, err
 	}
-	err = yaml.Unmarshal(bytes, &data)
+	err = yaml.Unmarshal(b, &data)
 	return data, err
 }
 
