@@ -7,6 +7,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  VERSION: ${{ github.ref_name != '' ? github.ref_name : 'dev' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,5 +40,5 @@ jobs:
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: stamp-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: stamp-${{ matrix.goos }}-${{ matrix.goarch }}-v${{ env.VERSION }}
           path: dist/
