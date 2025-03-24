@@ -13,33 +13,32 @@ import (
 func RunSelfTest(opts Options) {
 	fmt.Println("== Stamp Self-Test ==")
 
-	// Prüfe .env-Datei
+	// Check .env file
 	if opts.EnvPath == "" {
-		fmt.Println("[!] Keine .env-Datei angegeben")
+		fmt.Println("[!] No .env file specified")
 	} else {
 		_, err := parser.LoadEnv(opts.EnvPath)
-		printResult("ENV geladen", err)
+		printResult("ENV loaded", err)
 	}
 
-	// Prüfe YAML-Datei
+	// Check YAML file
 	if opts.YamlPath == "" {
-		fmt.Println("[!] Keine YAML-Datei angegeben")
+		fmt.Println("[!] No YAML file specified")
 	} else {
 		_, err := parser.LoadYAML(opts.YamlPath)
-		printResult("YAML geladen", err)
+		printResult("YAML loaded", err)
 	}
 
-	// Prüfe Template-Ordner
+	// Check template directory
 	if opts.InDir == "" {
-		fmt.Println("[!] Kein Template-Ordner angegeben")
+		fmt.Println("[!] No template directory specified")
 	} else {
 		templates, ok := listTemplates(opts.InDir)
-		printCheck("Templates gefunden", ok)
+		printCheck("Templates found", ok)
 		if !ok {
-			fmt.Println("[!] Es wurden keine Templates zum Rendern gefunden.")
+			fmt.Println("[!] No templates to render.")
 		}
 
-		// Daten zusammenführen, falls ENV oder YAML angegeben wurden
 		var data map[string]interface{}
 		if opts.EnvPath != "" || opts.YamlPath != "" {
 			env, _ := parser.LoadEnv(opts.EnvPath)
@@ -59,21 +58,21 @@ func RunSelfTest(opts Options) {
 			}
 		}
 		if len(templates) > 0 && allOk {
-			fmt.Println("[✓] Alle Templates rendern erfolgreich.")
+			fmt.Println("[✓] All templates rendered successfully.")
 		}
 	}
 
-	// Prüfe Ausgabeordner
+	// Check output directory
 	if opts.OutDir == "" {
-		fmt.Println("[!] Kein Ausgabeordner angegeben")
+		fmt.Println("[!] No output directory specified")
 	} else {
 		testFile := filepath.Join(opts.OutDir, ".stamp_test")
 		err := os.WriteFile(testFile, []byte("test"), 0644)
-		printResult("Ausgabeverzeichnis beschreibbar", err)
+		printResult("Output directory writable", err)
 		_ = os.Remove(testFile)
 	}
 
-	fmt.Println("== Fertig ==")
+	fmt.Println("== Finished ==")
 }
 
 func listTemplates(dir string) ([]string, bool) {
