@@ -10,7 +10,7 @@ import (
 
 func main() {
 	selfTest := flag.Bool("self-test", false, "Run self-test")
-	render := flag.Bool("render", false, "Render a single template or batch")
+	render := flag.Bool("render", false, "Render a single template")
 	autoScan := flag.Bool("auto-scan", false, "Recursively render all files in the directory and overwrite in place")
 	strict := flag.Bool("strict", false, "Enable strict mode (error on missing placeholders)")
 	dryRun := flag.Bool("dry-run", false, "Display output in terminal without writing to file")
@@ -19,9 +19,15 @@ func main() {
 	yaml := flag.String("yaml", "", "Path to YAML file")
 	in := flag.String("in", "", "Template file to render")
 	out := flag.String("out", "", "Output file for rendered template")
-	inDir := flag.String("in-dir", "", "Directory containing templates (for batch processing)")
+	inDir := flag.String("in-dir", "", "Directory containing templates (for batch processing or auto-scan)")
 	outDir := flag.String("out-dir", "", "Output directory for batch processing (ignored in auto-scan mode)")
 	flag.Parse()
+
+	// Prüfen: auto-scan und render dürfen nicht gemeinsam verwendet werden.
+	if *autoScan && *render {
+		fmt.Println("Error: You cannot use -render with -auto-scan. Please remove the -render flag when using auto-scan mode.")
+		os.Exit(1)
+	}
 
 	opts := cmd.Options{
 		EnvPath:      *env,
