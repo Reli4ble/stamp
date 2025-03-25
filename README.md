@@ -48,6 +48,8 @@ stamp is a lightweight template tool written in Go that processes `.st` files us
 - **Batch Processing:** Process all `.st` files in a directory and output them (without the `.st` extension).
 - **Cross-Platform Builds:** Built via GitHub Actions for Linux, and macOS (amd64 & arm64).
 - **Self-Test Mode:** Validate your configuration, check for required files, and ensure write permissions.
+- **Auto-scan mode:** Recursively render all files in a directory and overwrite them in place.
+- Control exit behavior with --force-success.
 
 
 
