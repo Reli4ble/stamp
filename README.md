@@ -1,43 +1,22 @@
 # 🧰 stamp
 
-`stamp` ist ein schlankes Template-Tool in Go zur Verarbeitung von `.st`-Dateien mit Daten aus `.env`- und `.yaml`-Quellen.
+`stamp` ist ein schlankes Template-Tool in Go zur Verarbeitung von `.st`-Dateien mit Daten aus `.env`- und `.yaml`-Quellen. Es unterstützt den strikten Modus (Fehler bei fehlenden Platzhaltern), Probelauf (Ausgabevorschau im Terminal), Selbsttest, Stapelverarbeitung und mehr.
 
 ## 🔧 Features
 
-- Platzhalterersetzung mit `{{ .VARIABLEN }}`-Syntax
-- Unterstützung für `.env` **und** `.yaml`-Dateien
-- `--strict`: Fehler bei nicht gesetzten Variablen
-- `--dry-run`: Ausgabe ins Terminal statt Datei
-- `--self-test`: prüft dein Setup vorab
-- Einfach als statisches Binary nutzbar (kein Docker nötig)
-
-## 🚀 CLI-Beispiele
-
-```bash
-# Einzelnes Template rendern
-stamp --render --in=config.tpl.st --out=config.conf --env=.env --yaml=config.yaml
-
-# Im Batch alle .st-Dateien rendern
-stamp --render --in-dir=templates/ --out-dir=out/ --env=.env --yaml=config.yaml
-
-# Vorschau-Modus
-stamp --render --in-dir=templates --dry-run
-
-# Strikter Modus (Fehler bei fehlenden Variablen)
-stamp --render --in=config.tpl.st --out=config.conf --strict
-
-# Setup testen
-stamp --self-test --in-dir=templates --out-dir=out --env=.env --yaml=config.yaml
-```
-
-## 📄 Lizenz
-
-[Apache 2.0](LICENSE)
-
+- **Platzhalterersetzung:** Verwenden Sie die Syntax `{{ .VARIABLE }}` in Ihren Vorlagen.
+- **Datenquellen:** Führen Sie Daten aus einer `.env`-Datei und einer YAML-Datei zusammen (YAML-Werte überschreiben ENV im Konfliktfall).
+- **Strikter Modus:** Fehlerausgabe bei fehlendem Platzhalter.
+- **Probelaufmodus:** Zeigen Sie die gerenderte Vorlage im Terminal an, anstatt sie in eine Datei zu schreiben.
+- **Stapelverarbeitung:** Verarbeiten Sie alle `.st`-Dateien in einem Verzeichnis und geben Sie sie aus (ohne die Erweiterung `.st`).
+- **Plattformübergreifende Builds:** Erstellt über GitHub Actions für Linux und macOS (amd64 & arm64).
+- **Selbsttestmodus:** Überprüfen Sie Ihre Konfiguration, prüfen Sie, ob erforderliche Dateien vorhanden sind, und stellen Sie die Schreibberechtigungen sicher.
+- **Automatischer Scanmodus:** Rendern Sie alle Dateien in einem Verzeichnis rekursiv und überschreiben Sie sie an Ort und Stelle.
+- **Beenden-Verhalten steuern:** mit --force-success.
 
 # 🧰 stamp
 
-stamp is a lightweight template tool written in Go that processes `.st` files using variables provided in `.env` and `.yaml` files. It supports strict mode (errors on missing placeholders), dry-run (output preview in the terminal), self-test, and batch processing.
+stamp is a lightweight template tool written in Go that processes `.st` files using variables provided in `.env` and `.yaml` files. It supports strict mode (errors on missing placeholders), dry-run (output preview in the terminal), self-test, batch processing and more.
 
 ## 🔧 Features
 
@@ -49,7 +28,7 @@ stamp is a lightweight template tool written in Go that processes `.st` files us
 - **Cross-Platform Builds:** Built via GitHub Actions for Linux, and macOS (amd64 & arm64).
 - **Self-Test Mode:** Validate your configuration, check for required files, and ensure write permissions.
 - **Auto-scan mode:** Recursively render all files in a directory and overwrite them in place.
-- Control exit behavior with --force-success.
+- **Control exit behavior:** with --force-success.
 
 
 
